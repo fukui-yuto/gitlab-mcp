@@ -4,6 +4,39 @@ import type { ToolRegistrar } from "../types.js";
 
 export function registerGroupTools(register: ToolRegistrar, client: GitLabClient) {
   register(
+    "list_groups",
+    "グループ一覧を取得します。",
+    {
+      search: z.string().optional().describe("グループ名で検索"),
+      owned: z.boolean().optional().describe("自分がオーナーのグループのみ"),
+      min_access_level: z.number().int().optional().describe("最小アクセスレベル"),
+      order_by: z.enum(["name", "path", "id", "similarity"]).optional(),
+      sort: z.enum(["asc", "desc"]).optional(),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async (params) => {
+      return await client.get(
+        "/groups",
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
+    "get_group",
+    "グループの詳細情報を取得します。",
+    {
+      group_id: z.string().describe("グループID（数値またはURLエンコードされたパス）"),
+    },
+    async ({ group_id }) => {
+      return await client.get(
+        `/groups/${encodeURIComponent(group_id)}`,
+      );
+    },
+  );
+
+  register(
     "fork_project",
     "プロジェクトをフォークします。",
     {

@@ -141,4 +141,23 @@ export function registerMergeRequestTools(register: ToolRegistrar, client: GitLa
       );
     },
   );
+
+  register(
+    "list_merge_request_notes",
+    "Merge Requestのコメント（ノート）一覧を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      merge_request_iid: z.number().int().describe("MRのIID"),
+      sort: z.enum(["asc", "desc"]).optional().describe("ソート順"),
+      order_by: z.enum(["created_at", "updated_at"]).optional(),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async ({ project_id, merge_request_iid, ...params }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/merge_requests/${merge_request_iid}/notes`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
 }

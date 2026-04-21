@@ -83,4 +83,40 @@ export function registerIssueTools(register: ToolRegistrar, client: GitLabClient
       );
     },
   );
+
+  register(
+    "list_issue_notes",
+    "Issueのコメント（ノート）一覧を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      sort: z.enum(["asc", "desc"]).optional().describe("ソート順"),
+      order_by: z.enum(["created_at", "updated_at"]).optional(),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async ({ project_id, issue_iid, ...params }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/notes`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
+    "create_issue_note",
+    "Issueにコメントを投稿します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      body: z.string().describe("コメント本文（Markdown）"),
+      confidential: z.boolean().optional().describe("内部コメントにする"),
+    },
+    async ({ project_id, issue_iid, ...body }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/notes`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
 }

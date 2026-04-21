@@ -28,47 +28,76 @@ describe("MCP Server", () => {
       const toolNames = tools.map((t) => t.name).sort();
 
       expect(toolNames).toEqual([
+        "add_project_member",
         "approve_merge_request",
         "cancel_pipeline",
+        "compare_branches",
         "create_branch",
         "create_issue",
+        "create_issue_note",
+        "create_label",
         "create_merge_request",
         "create_merge_request_note",
+        "create_milestone",
         "create_or_update_file",
+        "create_release",
+        "create_snippet",
+        "create_tag",
         "create_wiki_page",
+        "delete_branch",
+        "delete_label",
+        "delete_milestone",
         "delete_wiki_page",
         "fork_project",
+        "get_commit",
+        "get_current_user",
         "get_file_contents",
+        "get_group",
         "get_issue",
         "get_job_log",
         "get_merge_request",
         "get_merge_request_diffs",
         "get_pipeline",
         "get_project",
+        "get_snippet",
+        "get_user",
         "get_wiki_page",
         "list_branches",
+        "list_commits",
         "list_deployments",
         "list_environments",
         "list_group_projects",
+        "list_groups",
+        "list_issue_notes",
         "list_issues",
         "list_labels",
+        "list_merge_request_notes",
         "list_merge_requests",
         "list_milestones",
         "list_pipeline_jobs",
         "list_pipelines",
+        "list_project_members",
         "list_projects",
+        "list_releases",
+        "list_repository_tree",
+        "list_snippets",
+        "list_tags",
+        "list_users",
         "list_wiki_pages",
         "merge_merge_request",
+        "remove_project_member",
         "retry_pipeline",
         "search",
         "update_issue",
+        "update_label",
+        "update_milestone",
         "update_wiki_page",
       ]);
     });
 
-    it("has 35 tools total", async () => {
+    it("has 64 tools total", async () => {
       const { tools } = await client.listTools();
-      expect(tools).toHaveLength(35);
+      expect(tools).toHaveLength(64);
     });
   });
 
