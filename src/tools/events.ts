@@ -28,7 +28,7 @@ export function registerEventTools(register: ToolRegistrar, client: GitLabClient
     "list_user_events",
     "ユーザーのアクティビティイベント一覧を取得します。",
     {
-      user_id: z.number().int().describe("ユーザーID"),
+      user_id: z.coerce.number().int().describe("ユーザーID"),
       action: z.enum(["created", "updated", "closed", "reopened", "pushed", "commented", "merged", "joined", "left", "destroyed", "expired"]).optional().describe("アクションでフィルタ"),
       target_type: z.enum(["issue", "milestone", "merge_request", "note", "project", "snippet", "user"]).optional().describe("ターゲットタイプでフィルタ"),
       after: z.string().optional().describe("この日付以降のイベント（YYYY-MM-DD）"),
