@@ -226,4 +226,51 @@ export function registerRepositoryTools(register: ToolRegistrar, client: GitLabC
       );
     },
   );
+
+  register(
+    "delete_tag",
+    "タグを削除します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      tag_name: z.string().describe("削除するタグ名"),
+    },
+    async ({ project_id, tag_name }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/repository/tags/${encodeURIComponent(tag_name)}`,
+      );
+      return { message: "Tag deleted successfully" };
+    },
+  );
+
+  register(
+    "cherry_pick_commit",
+    "コミットを指定ブランチにチェリーピックします。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      sha: z.string().describe("チェリーピックするコミットSHA"),
+      branch: z.string().describe("チェリーピック先のブランチ名"),
+    },
+    async ({ project_id, sha, branch }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/repository/commits/${sha}/cherry_pick`,
+        { branch },
+      );
+    },
+  );
+
+  register(
+    "revert_commit",
+    "コミットを指定ブランチでリバートします。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      sha: z.string().describe("リバートするコミットSHA"),
+      branch: z.string().describe("リバート先のブランチ名"),
+    },
+    async ({ project_id, sha, branch }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/repository/commits/${sha}/revert`,
+        { branch },
+      );
+    },
+  );
 }

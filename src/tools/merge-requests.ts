@@ -160,4 +160,64 @@ export function registerMergeRequestTools(register: ToolRegistrar, client: GitLa
       );
     },
   );
+
+  register(
+    "list_merge_request_commits",
+    "Merge Requestに含まれるコミット一覧を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      merge_request_iid: z.number().int().describe("MRのIID"),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async ({ project_id, merge_request_iid, ...params }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/merge_requests/${merge_request_iid}/commits`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
+    "create_merge_request_discussion",
+    "Merge Requestにディスカッションスレッドを作成します（行コメント対応）。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      merge_request_iid: z.number().int().describe("MRのIID"),
+      body: z.string().describe("コメント本文（Markdown）"),
+      position: z.object({
+        base_sha: z.string().describe("ベースコミットSHA"),
+        start_sha: z.string().describe("開始コミットSHA"),
+        head_sha: z.string().describe("ヘッドコミットSHA"),
+        position_type: z.enum(["text", "image"]).default("text"),
+        new_path: z.string().optional().describe("新しいファイルパス"),
+        old_path: z.string().optional().describe("古いファイルパス"),
+        new_line: z.number().int().optional().describe("新しいファイルの行番号"),
+        old_line: z.number().int().optional().describe("古いファイルの行番号"),
+      }).optional().describe("行コメントの位置情報"),
+    },
+    async ({ project_id, merge_request_iid, ...body }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/merge_requests/${merge_request_iid}/discussions`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "resolve_discussion",
+    "Merge Requestのディスカッションを解決または未解決に切り替えます。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      merge_request_iid: z.number().int().describe("MRのIID"),
+      discussion_id: z.string().describe("ディスカッションID"),
+      resolved: z.boolean().describe("trueで解決、falseで未解決に戻す"),
+    },
+    async ({ project_id, merge_request_iid, discussion_id, resolved }) => {
+      return await client.put(
+        `/projects/${encodeURIComponent(project_id)}/merge_requests/${merge_request_iid}/discussions/${discussion_id}`,
+        { resolved },
+      );
+    },
+  );
 }

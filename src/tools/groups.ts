@@ -77,4 +77,73 @@ export function registerGroupTools(register: ToolRegistrar, client: GitLabClient
       );
     },
   );
+
+  register(
+    "create_group",
+    "新しいグループを作成します。",
+    {
+      name: z.string().describe("グループ名"),
+      path: z.string().describe("グループパス（URLに使用）"),
+      description: z.string().optional().describe("グループの説明"),
+      visibility: z.enum(["public", "internal", "private"]).optional().default("private"),
+      parent_id: z.number().int().optional().describe("親グループID（サブグループの場合）"),
+    },
+    async (body) => {
+      return await client.post(
+        "/groups",
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "update_group",
+    "既存のグループを更新します。",
+    {
+      group_id: z.string().describe("グループID"),
+      name: z.string().optional().describe("新しいグループ名"),
+      description: z.string().optional().describe("新しい説明"),
+      visibility: z.enum(["public", "internal", "private"]).optional(),
+    },
+    async ({ group_id, ...body }) => {
+      return await client.put(
+        `/groups/${encodeURIComponent(group_id)}`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "list_group_members",
+    "グループのメンバー一覧を取得します。",
+    {
+      group_id: z.string().describe("グループID"),
+      query: z.string().optional().describe("ユーザー名またはメールで検索"),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async ({ group_id, ...params }) => {
+      return await client.get(
+        `/groups/${encodeURIComponent(group_id)}/members`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
+    "add_group_member",
+    "グループにメンバーを追加します。",
+    {
+      group_id: z.string().describe("グループID"),
+      user_id: z.number().int().describe("追加するユーザーID"),
+      access_level: z.number().int().describe("アクセスレベル（10=Guest, 20=Reporter, 30=Developer, 40=Maintainer, 50=Owner）"),
+      expires_at: z.string().optional().describe("有効期限（YYYY-MM-DD）"),
+    },
+    async ({ group_id, ...body }) => {
+      return await client.post(
+        `/groups/${encodeURIComponent(group_id)}/members`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
 }

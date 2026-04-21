@@ -99,4 +99,73 @@ export function registerPipelineTools(register: ToolRegistrar, client: GitLabCli
       );
     },
   );
+
+  register(
+    "create_pipeline",
+    "パイプラインを手動でトリガーします。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      ref: z.string().describe("ブランチ名またはタグ名"),
+      variables: z.array(z.object({
+        key: z.string().describe("変数名"),
+        value: z.string().describe("変数値"),
+        variable_type: z.enum(["env_var", "file"]).optional().default("env_var"),
+      })).optional().describe("パイプライン変数"),
+    },
+    async ({ project_id, ...body }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/pipeline`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "play_job",
+    "手動ジョブを実行します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      job_id: z.number().int().describe("ジョブID"),
+      job_variables_attributes: z.array(z.object({
+        key: z.string().describe("変数名"),
+        value: z.string().describe("変数値"),
+      })).optional().describe("ジョブ変数"),
+    },
+    async ({ project_id, job_id, ...body }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/jobs/${job_id}/play`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "list_pipeline_schedules",
+    "パイプラインスケジュール一覧を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async ({ project_id, ...params }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/pipeline_schedules`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
+    "get_job_artifacts",
+    "ジョブのアーティファクト情報を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      job_id: z.number().int().describe("ジョブID"),
+    },
+    async ({ project_id, job_id }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/jobs/${job_id}/artifacts`,
+      );
+    },
+  );
 }

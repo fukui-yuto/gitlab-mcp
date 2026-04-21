@@ -119,4 +119,50 @@ export function registerIssueTools(register: ToolRegistrar, client: GitLabClient
       );
     },
   );
+
+  register(
+    "list_issue_links",
+    "Issue間のリンク一覧を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+    },
+    async ({ project_id, issue_iid }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/links`,
+      );
+    },
+  );
+
+  register(
+    "create_issue_link",
+    "Issue同士をリンクします。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("リンク元IssueのIID"),
+      target_project_id: z.string().describe("リンク先のプロジェクトID"),
+      target_issue_iid: z.number().int().describe("リンク先IssueのIID"),
+      link_type: z.enum(["relates_to", "blocks", "is_blocked_by"]).optional().default("relates_to").describe("リンクの種類"),
+    },
+    async ({ project_id, issue_iid, ...body }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/links`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "list_related_merge_requests",
+    "Issueに関連するMerge Request一覧を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+    },
+    async ({ project_id, issue_iid }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/related_merge_requests`,
+      );
+    },
+  );
 }

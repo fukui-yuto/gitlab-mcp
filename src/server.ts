@@ -16,6 +16,9 @@ import { registerUserTools } from "./tools/users.js";
 import { registerMemberTools } from "./tools/members.js";
 import { registerReleaseTools } from "./tools/releases.js";
 import { registerSnippetTools } from "./tools/snippets.js";
+import { registerWebhookTools } from "./tools/webhooks.js";
+import { registerAccessTokenTools } from "./tools/access-tokens.js";
+import { registerEventTools } from "./tools/events.js";
 import type { z } from "zod";
 import { GitLabApiError } from "./gitlab-client.js";
 
@@ -87,6 +90,9 @@ export function createServer(config: { baseUrl: string; token: string }): McpSer
   registerMemberTools(register, client);
   registerReleaseTools(register, client);
   registerSnippetTools(register, client);
+  registerWebhookTools(register, client);
+  registerAccessTokenTools(register, client);
+  registerEventTools(register, client);
 
   return server;
 }
