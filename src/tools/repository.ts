@@ -31,7 +31,15 @@ export function registerRepositoryTools(register: ToolRegistrar, client: GitLabC
     async ({ project_id, file_path, ref }) => {
       const encodedPath = encodeURIComponent(file_path);
       const params: Record<string, string> = {};
-      if (ref) params.ref = ref;
+      if (ref) {
+        params.ref = ref;
+      } else {
+        // ref未指定時はデフォルトブランチを取得
+        const project = await client.get<{ default_branch: string }>(
+          `/projects/${encodeURIComponent(project_id)}`,
+        );
+        params.ref = project.default_branch;
+      }
 
       const result = await client.get<{ content: string; encoding: string; file_name: string; file_path: string; size: number }>(
         `/projects/${encodeURIComponent(project_id)}/repository/files/${encodedPath}`,

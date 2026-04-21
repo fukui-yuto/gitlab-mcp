@@ -36,6 +36,7 @@ describe("MCP Server", () => {
         "create_merge_request_note",
         "create_or_update_file",
         "create_wiki_page",
+        "delete_wiki_page",
         "fork_project",
         "get_file_contents",
         "get_issue",
@@ -44,6 +45,7 @@ describe("MCP Server", () => {
         "get_merge_request_diffs",
         "get_pipeline",
         "get_project",
+        "get_wiki_page",
         "list_branches",
         "list_deployments",
         "list_environments",
@@ -60,12 +62,13 @@ describe("MCP Server", () => {
         "retry_pipeline",
         "search",
         "update_issue",
+        "update_wiki_page",
       ]);
     });
 
-    it("has 32 tools total", async () => {
+    it("has 35 tools total", async () => {
       const { tools } = await client.listTools();
-      expect(tools).toHaveLength(32);
+      expect(tools).toHaveLength(35);
     });
   });
 
@@ -143,7 +146,13 @@ describe("MCP Server", () => {
       const fileContent = "console.log('hello');";
       const base64Content = Buffer.from(fileContent).toString("base64");
 
-      vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      const fetchSpy = vi.spyOn(globalThis, "fetch");
+      // 1st call: get project default_branch (ref未指定時)
+      fetchSpy.mockResolvedValueOnce(
+        new Response(JSON.stringify({ default_branch: "main" }), { status: 200 }),
+      );
+      // 2nd call: get file contents
+      fetchSpy.mockResolvedValueOnce(
         new Response(
           JSON.stringify({
             file_name: "index.ts",

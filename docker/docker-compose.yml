@@ -37,7 +37,6 @@ services:
         registry['enable'] = false
 
         # GitLab Pages 無効化（不要）
-        pages_external_url ''
         gitlab_pages['enable'] = false
     ports:
       - "8929:8929"   # HTTP

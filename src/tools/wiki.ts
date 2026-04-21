@@ -34,4 +34,53 @@ export function registerWikiTools(register: ToolRegistrar, client: GitLabClient)
       );
     },
   );
+
+  register(
+    "get_wiki_page",
+    "Wikiページの内容を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      slug: z.string().describe("ページのスラッグ（URLパス）"),
+      render_html: z.boolean().optional().describe("HTMLレンダリング済みの内容を含める"),
+    },
+    async ({ project_id, slug, ...params }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/wikis/${encodeURIComponent(slug)}`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
+    "update_wiki_page",
+    "既存のWikiページを更新します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      slug: z.string().describe("ページのスラッグ（URLパス）"),
+      title: z.string().optional().describe("新しいタイトル"),
+      content: z.string().optional().describe("新しい内容（Markdown）"),
+      format: z.enum(["markdown", "rdoc", "asciidoc", "org"]).optional(),
+    },
+    async ({ project_id, slug, ...body }) => {
+      return await client.put(
+        `/projects/${encodeURIComponent(project_id)}/wikis/${encodeURIComponent(slug)}`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "delete_wiki_page",
+    "Wikiページを削除します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      slug: z.string().describe("ページのスラッグ（URLパス）"),
+    },
+    async ({ project_id, slug }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/wikis/${encodeURIComponent(slug)}`,
+      );
+      return { message: "Wiki page deleted successfully" };
+    },
+  );
 }
