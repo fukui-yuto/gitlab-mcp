@@ -1,0 +1,61 @@
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab-mcp-test
+    hostname: gitlab.local
+    restart: unless-stopped
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        # 外部URL（ホストからアクセスするポートに合わせる）
+        external_url 'http://localhost:8929'
+
+        # SSH ポート
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+
+        # Puma（Webサーバー）設定 - メモリ節約
+        puma['worker_processes'] = 2
+
+        # Sidekiq - メモリ節約
+        sidekiq['max_concurrency'] = 5
+
+        # 不要なサービスを無効化してリソース節約
+        prometheus_monitoring['enable'] = false
+
+        # PostgreSQL チューニング（メモリ節約）
+        postgresql['shared_buffers'] = "128MB"
+        postgresql['max_worker_processes'] = 4
+
+        # 初期rootパスワード
+        gitlab_rails['initial_root_password'] = 'GitLabTestPass123!'
+
+        # APIレート制限を緩和（テスト用）
+        gitlab_rails['rack_attack_git_basic_auth'] = {
+          'enabled' => false,
+        }
+
+        # コンテナレジストリ無効化（不要）
+        registry['enable'] = false
+
+        # GitLab Pages 無効化（不要）
+        pages_external_url ''
+        gitlab_pages['enable'] = false
+    ports:
+      - "8929:8929"   # HTTP
+      - "2224:22"     # SSH
+    volumes:
+      - gitlab-config:/etc/gitlab
+      - gitlab-logs:/var/log/gitlab
+      - gitlab-data:/var/opt/gitlab
+    shm_size: "256m"
+    # ヘルスチェック: GitLab起動完了を検知
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8929/-/readiness"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 300s
+
+volumes:
+  gitlab-config:
+  gitlab-logs:
+  gitlab-data:
