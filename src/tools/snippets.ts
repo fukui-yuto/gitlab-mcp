@@ -53,6 +53,26 @@ export function registerSnippetTools(register: ToolRegistrar, client: GitLabClie
   );
 
   register(
+    "update_snippet",
+    "スニペットを更新します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      snippet_id: z.number().int().describe("スニペットID"),
+      title: z.string().optional().describe("新しいタイトル"),
+      file_name: z.string().optional().describe("新しいファイル名"),
+      content: z.string().optional().describe("新しい内容"),
+      description: z.string().optional().describe("新しい説明"),
+      visibility: z.enum(["private", "internal", "public"]).optional(),
+    },
+    async ({ project_id, snippet_id, ...body }) => {
+      return await client.put(
+        `/projects/${encodeURIComponent(project_id)}/snippets/${snippet_id}`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
     "delete_snippet",
     "スニペットを削除します。",
     {

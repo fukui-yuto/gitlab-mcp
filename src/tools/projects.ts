@@ -122,4 +122,26 @@ export function registerProjectTools(register: ToolRegistrar, client: GitLabClie
       return { message: "Project deleted successfully" };
     },
   );
+
+  register(
+    "create_project",
+    "新しいプロジェクトを作成します。",
+    {
+      name: z.string().describe("プロジェクト名"),
+      path: z.string().optional().describe("プロジェクトパス（URLスラッグ）"),
+      namespace_id: z.number().optional().describe("名前空間ID（グループに作成する場合）"),
+      description: z.string().optional().describe("プロジェクトの説明"),
+      visibility: z.enum(["public", "internal", "private"]).optional().default("private"),
+      initialize_with_readme: z.boolean().optional().describe("READMEで初期化"),
+      default_branch: z.string().optional().describe("デフォルトブランチ名"),
+      import_url: z.string().optional().describe("インポート元URL"),
+      issues_enabled: z.boolean().optional(),
+      merge_requests_enabled: z.boolean().optional(),
+      wiki_enabled: z.boolean().optional(),
+      snippets_enabled: z.boolean().optional(),
+    },
+    async (body) => {
+      return await client.post("/projects", body as Record<string, unknown>);
+    },
+  );
 }

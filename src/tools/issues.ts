@@ -167,6 +167,148 @@ export function registerIssueTools(register: ToolRegistrar, client: GitLabClient
   );
 
   register(
+    "update_issue_note",
+    "Issueのコメント（ノート）を更新します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      note_id: z.number().int().describe("ノートID"),
+      body: z.string().describe("新しいコメント本文（Markdown）"),
+    },
+    async ({ project_id, issue_iid, note_id, body }) => {
+      return await client.put(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/notes/${note_id}`,
+        { body },
+      );
+    },
+  );
+
+  register(
+    "list_issue_discussions",
+    "Issueのディスカッション一覧を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async ({ project_id, issue_iid, ...params }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/discussions`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
+    "create_issue_discussion",
+    "Issueにディスカッションスレッドを作成します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      body: z.string().describe("ディスカッション本文（Markdown）"),
+    },
+    async ({ project_id, issue_iid, body }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/discussions`,
+        { body },
+      );
+    },
+  );
+
+  register(
+    "subscribe_to_issue",
+    "Issueの通知を購読します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+    },
+    async ({ project_id, issue_iid }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/subscribe`,
+      );
+    },
+  );
+
+  register(
+    "unsubscribe_from_issue",
+    "Issueの通知購読を解除します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+    },
+    async ({ project_id, issue_iid }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/unsubscribe`,
+      );
+    },
+  );
+
+  register(
+    "set_issue_time_estimate",
+    "Issueの時間見積もりを設定します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      duration: z.string().describe("見積もり時間（例: '3h30m', '1d', '2w'）"),
+    },
+    async ({ project_id, issue_iid, duration }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/time_estimate`,
+        { duration },
+      );
+    },
+  );
+
+  register(
+    "add_issue_time_spent",
+    "Issueに作業時間を追加します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      duration: z.string().describe("作業時間（例: '1h30m', '2h'）"),
+      summary: z.string().optional().describe("作業内容の説明"),
+    },
+    async ({ project_id, issue_iid, ...body }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/add_spent_time`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "get_issue_time_tracking_stats",
+    "Issueの時間トラッキング統計を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+    },
+    async ({ project_id, issue_iid }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/time_stats`,
+      );
+    },
+  );
+
+  register(
+    "list_issue_label_events",
+    "Issueのラベル変更履歴を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async ({ project_id, issue_iid, ...params }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/resource_label_events`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
     "delete_issue",
     "Issueを削除します。この操作は取り消せません。",
     {

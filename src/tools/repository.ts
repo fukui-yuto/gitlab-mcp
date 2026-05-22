@@ -275,6 +275,43 @@ export function registerRepositoryTools(register: ToolRegistrar, client: GitLabC
   );
 
   register(
+    "list_repository_contributors",
+    "リポジトリのコントリビューター一覧を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      order_by: z.enum(["name", "email", "commits"]).optional(),
+      sort: z.enum(["asc", "desc"]).optional(),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async ({ project_id, ...params }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/repository/contributors`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
+    "get_repository_blame",
+    "ファイルのblame情報（行ごとの最終変更コミット）を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      file_path: z.string().describe("ファイルパス"),
+      ref: z.string().optional().describe("ブランチ名、タグ名、コミットSHA"),
+    },
+    async ({ project_id, file_path, ref }) => {
+      const encodedPath = encodeURIComponent(file_path);
+      const params: Record<string, string> = {};
+      if (ref) params.ref = ref;
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/repository/files/${encodedPath}/blame`,
+        params,
+      );
+    },
+  );
+
+  register(
     "delete_file",
     "リポジトリ内のファイルを削除します。",
     {

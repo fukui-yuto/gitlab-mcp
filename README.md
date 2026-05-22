@@ -4,20 +4,22 @@ Personal Access Token (PAT) で認証する GitLab MCP サーバー。
 
 GitLab 公式 MCP サーバーは OAuth 2.0 のみ対応・Premium 以上が必要ですが、本サーバーは **どのエディション (CE/EE/Free) でも** PAT だけで利用できます。
 
-## 実装済みツール一覧（全92ツール）
+## 実装済みツール一覧（全147ツール）
 
-### プロジェクト（6） — `projects.ts`
+### プロジェクト（8） — `projects.ts`
 
 | ツール名 | 説明 |
 |---------|------|
 | `list_projects` | プロジェクト一覧を取得（検索・フィルタ対応） |
 | `get_project` | プロジェクトの詳細情報を取得 |
+| `create_project` | 新しいプロジェクトを作成 |
 | `update_project` | プロジェクト設定を更新（マージ方法、CI設定等） |
 | `list_protected_branches` | プロテクトブランチ一覧を取得 |
 | `protect_branch` | ブランチを保護 |
 | `unprotect_branch` | ブランチの保護を解除 |
+| `delete_project` | プロジェクトを削除（取り消し不可） |
 
-### Issue（9） — `issues.ts`
+### Issue（21） — `issues.ts`
 
 | ツール名 | 説明 |
 |---------|------|
@@ -27,27 +29,44 @@ GitLab 公式 MCP サーバーは OAuth 2.0 のみ対応・Premium 以上が必�
 | `update_issue` | Issue を更新（タイトル変更・クローズ等） |
 | `list_issue_notes` | Issue のコメント（ノート）一覧を取得 |
 | `create_issue_note` | Issue にコメントを投稿 |
+| `update_issue_note` | Issue のコメントを更新 |
 | `list_issue_links` | Issue 間のリンク一覧を取得 |
 | `create_issue_link` | Issue 同士をリンク（関連・ブロック等） |
 | `list_related_merge_requests` | Issue に関連する MR 一覧を取得 |
+| `list_issue_discussions` | Issue のディスカッション一覧を取得 |
+| `create_issue_discussion` | Issue にディスカッションスレッドを作成 |
+| `subscribe_to_issue` | Issue の通知を購読 |
+| `unsubscribe_from_issue` | Issue の通知購読を解除 |
+| `set_issue_time_estimate` | Issue の時間見積もりを設定 |
+| `add_issue_time_spent` | Issue に作業時間を追加 |
+| `get_issue_time_tracking_stats` | Issue の時間トラッキング統計を取得 |
+| `list_issue_label_events` | Issue のラベル変更履歴を取得 |
+| `delete_issue` | Issue を削除（取り消し不可） |
+| `delete_issue_note` | Issue のコメント（ノート）を削除 |
+| `delete_issue_link` | Issue 間のリンクを削除 |
 
-### Merge Request（11） — `merge-requests.ts`
+### Merge Request（16） — `merge-requests.ts`
 
 | ツール名 | 説明 |
 |---------|------|
 | `list_merge_requests` | MR 一覧を取得（状態・ブランチ等でフィルタ） |
 | `get_merge_request` | MR の詳細情報を取得 |
 | `create_merge_request` | 新しい MR を作成 |
+| `update_merge_request` | MR を更新（タイトル・説明・状態変更等） |
 | `get_merge_request_diffs` | MR の変更差分を取得 |
 | `create_merge_request_note` | MR にコメントを投稿 |
+| `update_merge_request_note` | MR のコメントを更新 |
 | `merge_merge_request` | MR をマージ（スカッシュ・自動マージ対応） |
 | `approve_merge_request` | MR を承認 |
 | `list_merge_request_notes` | MR のコメント（ノート）一覧を取得 |
 | `list_merge_request_commits` | MR に含まれるコミット一覧を取得 |
+| `list_merge_request_discussions` | MR のディスカッション一覧を取得 |
 | `create_merge_request_discussion` | MR にディスカッションスレッドを作成（行コメント対応） |
 | `resolve_discussion` | ディスカッションを解決 / 未解決に切り替え |
+| `delete_merge_request` | MR を削除（取り消し不可） |
+| `delete_merge_request_note` | MR のコメント（ノート）を削除 |
 
-### リポジトリ（14） — `repository.ts`
+### リポジトリ（17） — `repository.ts`
 
 | ツール名 | 説明 |
 |---------|------|
@@ -65,8 +84,11 @@ GitLab 公式 MCP サーバーは OAuth 2.0 のみ対応・Premium 以上が必�
 | `delete_tag` | タグを削除 |
 | `cherry_pick_commit` | コミットをチェリーピック |
 | `revert_commit` | コミットをリバート |
+| `list_repository_contributors` | コントリビューター一覧を取得 |
+| `get_repository_blame` | ファイルの blame 情報を取得 |
+| `delete_file` | リポジトリ内のファイルを削除 |
 
-### パイプライン / ジョブ（10） — `pipelines.ts`
+### パイプライン / ジョブ（15） — `pipelines.ts`
 
 | ツール名 | 説明 |
 |---------|------|
@@ -79,7 +101,32 @@ GitLab 公式 MCP サーバーは OAuth 2.0 のみ対応・Premium 以上が必�
 | `create_pipeline` | パイプラインを手動トリガー（変数指定可） |
 | `play_job` | 手動ジョブを実行 |
 | `list_pipeline_schedules` | パイプラインスケジュール一覧を取得 |
+| `get_pipeline_schedule` | パイプラインスケジュールの詳細を取得 |
+| `create_pipeline_schedule` | パイプラインスケジュールを作成 |
+| `update_pipeline_schedule` | パイプラインスケジュールを更新 |
+| `delete_pipeline_schedule` | パイプラインスケジュールを削除 |
 | `get_job_artifacts` | ジョブアーティファクト情報を取得 |
+| `delete_pipeline` | パイプラインと関連ジョブを削除（取り消し不可） |
+
+### CI/CD 変数（6） — `ci-variables.ts`
+
+| ツール名 | 説明 |
+|---------|------|
+| `list_project_variables` | プロジェクトの CI/CD 変数一覧を取得 |
+| `get_project_variable` | CI/CD 変数の詳細を取得 |
+| `create_project_variable` | CI/CD 変数を作成 |
+| `update_project_variable` | CI/CD 変数を更新 |
+| `delete_project_variable` | CI/CD 変数を削除 |
+| `list_group_variables` | グループの CI/CD 変数一覧を取得 |
+
+### ランナー（4） — `runners.ts`
+
+| ツール名 | 説明 |
+|---------|------|
+| `list_runners` | 利用可能な全ランナー一覧を取得 |
+| `list_project_runners` | プロジェクトのランナー一覧を取得 |
+| `get_runner` | ランナーの詳細情報を取得 |
+| `list_runner_jobs` | ランナーが実行したジョブ一覧を取得 |
 
 ### ラベル（4） — `labels.ts`
 
@@ -105,12 +152,17 @@ GitLab 公式 MCP サーバーは OAuth 2.0 のみ対応・Premium 以上が必�
 | `update_milestone` | マイルストーンを更新 |
 | `delete_milestone` | マイルストーンを削除 |
 
-### デプロイメント / 環境（2） — `deployments.ts`
+### デプロイメント / 環境（7） — `deployments.ts`
 
 | ツール名 | 説明 |
 |---------|------|
 | `list_deployments` | デプロイメント一覧を取得 |
 | `list_environments` | 環境一覧を取得 |
+| `get_environment` | 環境の詳細情報を取得 |
+| `create_environment` | 環境を作成 |
+| `update_environment` | 環境を更新 |
+| `stop_environment` | 環境を停止 |
+| `delete_environment` | 環境を削除（停止済みの環境のみ） |
 
 ### Wiki（5） — `wiki.ts`
 
@@ -122,7 +174,7 @@ GitLab 公式 MCP サーバーは OAuth 2.0 のみ対応・Premium 以上が必�
 | `update_wiki_page` | Wiki ページを更新 |
 | `delete_wiki_page` | Wiki ページを削除 |
 
-### グループ / フォーク（8） — `groups.ts`
+### グループ / フォーク（10） — `groups.ts`
 
 | ツール名 | 説明 |
 |---------|------|
@@ -134,6 +186,8 @@ GitLab 公式 MCP サーバーは OAuth 2.0 のみ対応・Premium 以上が必�
 | `list_group_projects` | グループ内のプロジェクト一覧を取得 |
 | `list_group_members` | グループのメンバー一覧を取得 |
 | `add_group_member` | グループにメンバーを追加 |
+| `delete_group` | グループを削除（取り消し不可） |
+| `remove_group_member` | グループからメンバーを削除 |
 
 ### ユーザー（3） — `users.ts`
 
@@ -151,35 +205,43 @@ GitLab 公式 MCP サーバーは OAuth 2.0 のみ対応・Premium 以上が必�
 | `add_project_member` | プロジェクトにメンバーを追加 |
 | `remove_project_member` | プロジェクトからメンバーを削除 |
 
-### リリース（2） — `releases.ts`
+### リリース（5） — `releases.ts`
 
 | ツール名 | 説明 |
 |---------|------|
 | `list_releases` | リリース一覧を取得 |
+| `get_release` | リリースの詳細情報を取得 |
 | `create_release` | 新しいリリースを作成 |
+| `update_release` | リリースを更新 |
+| `delete_release` | リリースを削除（関連タグは削除されない） |
 
-### スニペット（3） — `snippets.ts`
+### スニペット（5） — `snippets.ts`
 
 | ツール名 | 説明 |
 |---------|------|
 | `list_snippets` | スニペット一覧を取得 |
 | `get_snippet` | スニペットの詳細情報を取得 |
 | `create_snippet` | 新しいスニペットを作成 |
+| `update_snippet` | スニペットを更新 |
+| `delete_snippet` | スニペットを削除 |
 
-### Webhook（3） — `webhooks.ts`
+### Webhook（5） — `webhooks.ts`
 
 | ツール名 | 説明 |
 |---------|------|
 | `list_webhooks` | Webhook 一覧を取得 |
+| `get_webhook` | Webhook の詳細情報を取得 |
 | `create_webhook` | Webhook を作成 |
+| `update_webhook` | Webhook を更新 |
 | `delete_webhook` | Webhook を削除 |
 
-### アクセストークン（2） — `access-tokens.ts`
+### アクセストークン（3） — `access-tokens.ts`
 
 | ツール名 | 説明 |
 |---------|------|
 | `list_project_access_tokens` | プロジェクトアクセストークン一覧を取得 |
 | `create_project_access_token` | プロジェクトアクセストークンを作成 |
+| `revoke_project_access_token` | プロジェクトアクセストークンを無効化（削除） |
 
 ### イベント / アクティビティ（2） — `events.ts`
 
@@ -187,6 +249,14 @@ GitLab 公式 MCP サーバーは OAuth 2.0 のみ対応・Premium 以上が必�
 |---------|------|
 | `list_project_events` | プロジェクトのアクティビティログを取得 |
 | `list_user_events` | ユーザーの活動履歴を取得 |
+
+### 移行チェック（3） — `migration-check.ts`
+
+| ツール名 | 説明 |
+|---------|------|
+| `check_issues_formatting` | Issue の Redmine→GitLab 移行時フォーマット崩れを検出 |
+| `check_wiki_formatting` | Wiki の Redmine→GitLab 移行時フォーマット崩れを検出 |
+| `check_repository_formatting` | リポジトリ内 MD ファイルの移行時フォーマット崩れを検出 |
 
 ## 前提条件
 
@@ -365,24 +435,27 @@ gitlab-mcp/
 │   ├── gitlab-client.ts      # GitLab API v4 クライアント
 │   ├── types.ts              # 共通型定義
 │   └── tools/
-│       ├── projects.ts       # プロジェクト (6)
-│       ├── issues.ts         # Issue (9)
-│       ├── merge-requests.ts # Merge Request (11)
-│       ├── repository.ts     # リポジトリ (14)
-│       ├── pipelines.ts      # パイプライン / ジョブ (10)
+│       ├── projects.ts       # プロジェクト (8)
+│       ├── issues.ts         # Issue (21)
+│       ├── merge-requests.ts # Merge Request (16)
+│       ├── repository.ts     # リポジトリ (17)
+│       ├── pipelines.ts      # パイプライン / ジョブ (15)
+│       ├── ci-variables.ts   # CI/CD 変数 (6)
+│       ├── runners.ts        # ランナー (4)
 │       ├── labels.ts         # ラベル (4)
 │       ├── search.ts         # 検索 (1)
 │       ├── milestones.ts     # マイルストーン (4)
-│       ├── deployments.ts    # デプロイメント / 環境 (2)
+│       ├── deployments.ts    # デプロイメント / 環境 (7)
 │       ├── wiki.ts           # Wiki (5)
-│       ├── groups.ts         # グループ / フォーク (8)
+│       ├── groups.ts         # グループ / フォーク (10)
 │       ├── users.ts          # ユーザー (3)
 │       ├── members.ts        # プロジェクトメンバー (3)
-│       ├── releases.ts       # リリース (2)
-│       ├── snippets.ts       # スニペット (3)
-│       ├── webhooks.ts       # Webhook (3)
-│       ├── access-tokens.ts  # アクセストークン (2)
-│       └── events.ts         # イベント / アクティビティ (2)
+│       ├── releases.ts       # リリース (5)
+│       ├── snippets.ts       # スニペット (5)
+│       ├── webhooks.ts       # Webhook (5)
+│       ├── access-tokens.ts  # アクセストークン (3)
+│       ├── events.ts         # イベント / アクティビティ (2)
+│       └── migration-check.ts # 移行チェック (3)
 ├── tests/
 │   ├── unit/                 # ユニットテスト (fetch モック)
 │   └── integration/          # 結合テスト (Docker GitLab)

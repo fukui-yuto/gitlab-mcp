@@ -41,6 +41,39 @@ export function registerReleaseTools(register: ToolRegistrar, client: GitLabClie
   );
 
   register(
+    "get_release",
+    "リリースの詳細情報を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      tag_name: z.string().describe("リリースに紐づくタグ名"),
+    },
+    async ({ project_id, tag_name }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/releases/${encodeURIComponent(tag_name)}`,
+      );
+    },
+  );
+
+  register(
+    "update_release",
+    "リリースを更新します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      tag_name: z.string().describe("リリースに紐づくタグ名"),
+      name: z.string().optional().describe("新しいリリース名"),
+      description: z.string().optional().describe("新しいリリースノート（Markdown）"),
+      released_at: z.string().optional().describe("リリース日時（ISO 8601形式）"),
+      milestones: z.array(z.string()).optional().describe("関連マイルストーン名の配列"),
+    },
+    async ({ project_id, tag_name, ...body }) => {
+      return await client.put(
+        `/projects/${encodeURIComponent(project_id)}/releases/${encodeURIComponent(tag_name)}`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
     "delete_release",
     "リリースを削除します。関連するタグは削除されません。",
     {

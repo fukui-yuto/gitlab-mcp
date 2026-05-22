@@ -222,6 +222,65 @@ export function registerMergeRequestTools(register: ToolRegistrar, client: GitLa
   );
 
   register(
+    "update_merge_request",
+    "Merge Requestを更新します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      merge_request_iid: z.number().int().describe("MRのIID"),
+      title: z.string().optional().describe("新しいタイトル"),
+      description: z.string().optional().describe("新しい説明"),
+      target_branch: z.string().optional().describe("ターゲットブランチ"),
+      assignee_ids: z.array(z.number()).optional(),
+      reviewer_ids: z.array(z.number()).optional(),
+      labels: z.string().optional(),
+      milestone_id: z.number().optional(),
+      state_event: z.enum(["close", "reopen"]).optional().describe("状態変更"),
+      remove_source_branch: z.boolean().optional(),
+      squash: z.boolean().optional(),
+    },
+    async ({ project_id, merge_request_iid, ...body }) => {
+      return await client.put(
+        `/projects/${encodeURIComponent(project_id)}/merge_requests/${merge_request_iid}`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "list_merge_request_discussions",
+    "Merge Requestのディスカッション一覧を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      merge_request_iid: z.number().int().describe("MRのIID"),
+      page: z.number().int().positive().optional().default(1),
+      per_page: z.number().int().min(1).max(100).optional().default(20),
+    },
+    async ({ project_id, merge_request_iid, ...params }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/merge_requests/${merge_request_iid}/discussions`,
+        params as Record<string, string | number | boolean>,
+      );
+    },
+  );
+
+  register(
+    "update_merge_request_note",
+    "Merge Requestのコメント（ノート）を更新します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      merge_request_iid: z.number().int().describe("MRのIID"),
+      note_id: z.number().int().describe("ノートID"),
+      body: z.string().describe("新しいコメント本文（Markdown）"),
+    },
+    async ({ project_id, merge_request_iid, note_id, body }) => {
+      return await client.put(
+        `/projects/${encodeURIComponent(project_id)}/merge_requests/${merge_request_iid}/notes/${note_id}`,
+        { body },
+      );
+    },
+  );
+
+  register(
     "delete_merge_request",
     "Merge Requestを削除します。この操作は取り消せません。",
     {

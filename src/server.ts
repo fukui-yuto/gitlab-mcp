@@ -20,6 +20,8 @@ import { registerWebhookTools } from "./tools/webhooks.js";
 import { registerAccessTokenTools } from "./tools/access-tokens.js";
 import { registerEventTools } from "./tools/events.js";
 import { registerMigrationCheckTools } from "./tools/migration-check.js";
+import { registerCiVariableTools } from "./tools/ci-variables.js";
+import { registerRunnerTools } from "./tools/runners.js";
 import type { z } from "zod";
 import { GitLabApiError } from "./gitlab-client.js";
 
@@ -95,6 +97,8 @@ export function createServer(config: { baseUrl: string; token: string }): McpSer
   registerAccessTokenTools(register, client);
   registerEventTools(register, client);
   registerMigrationCheckTools(register, client);
+  registerCiVariableTools(register, client);
+  registerRunnerTools(register, client);
 
   return server;
 }

@@ -183,4 +183,72 @@ export function registerPipelineTools(register: ToolRegistrar, client: GitLabCli
       return { message: "Pipeline deleted successfully" };
     },
   );
+
+  register(
+    "get_pipeline_schedule",
+    "パイプラインスケジュールの詳細情報を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      pipeline_schedule_id: z.number().int().describe("パイプラインスケジュールID"),
+    },
+    async ({ project_id, pipeline_schedule_id }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/pipeline_schedules/${pipeline_schedule_id}`,
+      );
+    },
+  );
+
+  register(
+    "create_pipeline_schedule",
+    "パイプラインスケジュールを作成します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      description: z.string().describe("スケジュールの説明"),
+      ref: z.string().describe("ブランチ名またはタグ名"),
+      cron: z.string().describe("Cron式（例: '0 1 * * *'）"),
+      cron_timezone: z.string().optional().describe("タイムゾーン（例: 'Asia/Tokyo'）"),
+      active: z.boolean().optional().describe("有効化するか"),
+    },
+    async ({ project_id, ...body }) => {
+      return await client.post(
+        `/projects/${encodeURIComponent(project_id)}/pipeline_schedules`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "update_pipeline_schedule",
+    "パイプラインスケジュールを更新します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      pipeline_schedule_id: z.number().int().describe("パイプラインスケジュールID"),
+      description: z.string().optional().describe("スケジュールの説明"),
+      ref: z.string().optional().describe("ブランチ名またはタグ名"),
+      cron: z.string().optional().describe("Cron式"),
+      cron_timezone: z.string().optional().describe("タイムゾーン"),
+      active: z.boolean().optional().describe("有効/無効"),
+    },
+    async ({ project_id, pipeline_schedule_id, ...body }) => {
+      return await client.put(
+        `/projects/${encodeURIComponent(project_id)}/pipeline_schedules/${pipeline_schedule_id}`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
+    "delete_pipeline_schedule",
+    "パイプラインスケジュールを削除します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      pipeline_schedule_id: z.number().int().describe("パイプラインスケジュールID"),
+    },
+    async ({ project_id, pipeline_schedule_id }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/pipeline_schedules/${pipeline_schedule_id}`,
+      );
+      return { message: "Pipeline schedule deleted successfully" };
+    },
+  );
 }

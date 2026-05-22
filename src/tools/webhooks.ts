@@ -47,6 +47,48 @@ export function registerWebhookTools(register: ToolRegistrar, client: GitLabClie
   );
 
   register(
+    "get_webhook",
+    "Webhookの詳細情報を取得します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      hook_id: z.number().int().describe("WebhookID"),
+    },
+    async ({ project_id, hook_id }) => {
+      return await client.get(
+        `/projects/${encodeURIComponent(project_id)}/hooks/${hook_id}`,
+      );
+    },
+  );
+
+  register(
+    "update_webhook",
+    "プロジェクトのWebhookを更新します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      hook_id: z.number().int().describe("WebhookID"),
+      url: z.string().optional().describe("Webhook URL"),
+      push_events: z.boolean().optional(),
+      issues_events: z.boolean().optional(),
+      merge_requests_events: z.boolean().optional(),
+      tag_push_events: z.boolean().optional(),
+      note_events: z.boolean().optional(),
+      pipeline_events: z.boolean().optional(),
+      job_events: z.boolean().optional(),
+      deployment_events: z.boolean().optional(),
+      releases_events: z.boolean().optional(),
+      wiki_page_events: z.boolean().optional(),
+      token: z.string().optional().describe("シークレットトークン"),
+      enable_ssl_verification: z.boolean().optional(),
+    },
+    async ({ project_id, hook_id, ...body }) => {
+      return await client.put(
+        `/projects/${encodeURIComponent(project_id)}/hooks/${hook_id}`,
+        body as Record<string, unknown>,
+      );
+    },
+  );
+
+  register(
     "delete_webhook",
     "プロジェクトのWebhookを削除します。",
     {
