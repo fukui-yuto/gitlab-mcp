@@ -108,4 +108,18 @@ export function registerProjectTools(register: ToolRegistrar, client: GitLabClie
       return { message: "Branch unprotected successfully" };
     },
   );
+
+  register(
+    "delete_project",
+    "プロジェクトを削除します。この操作は取り消せません。",
+    {
+      project_id: z.string().describe("プロジェクトID（数値またはURLエンコードされたパス）"),
+    },
+    async ({ project_id }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}`,
+      );
+      return { message: "Project deleted successfully" };
+    },
+  );
 }

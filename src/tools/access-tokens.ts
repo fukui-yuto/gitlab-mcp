@@ -36,4 +36,19 @@ export function registerAccessTokenTools(register: ToolRegistrar, client: GitLab
       );
     },
   );
+
+  register(
+    "revoke_project_access_token",
+    "プロジェクトのアクセストークンを無効化（削除）します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      token_id: z.number().int().describe("トークンID"),
+    },
+    async ({ project_id, token_id }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/access_tokens/${token_id}`,
+      );
+      return { message: "Project access token revoked successfully" };
+    },
+  );
 }

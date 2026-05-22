@@ -165,4 +165,51 @@ export function registerIssueTools(register: ToolRegistrar, client: GitLabClient
       );
     },
   );
+
+  register(
+    "delete_issue",
+    "Issueを削除します。この操作は取り消せません。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID（プロジェクト内番号）"),
+    },
+    async ({ project_id, issue_iid }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}`,
+      );
+      return { message: "Issue deleted successfully" };
+    },
+  );
+
+  register(
+    "delete_issue_note",
+    "Issueのコメント（ノート）を削除します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      note_id: z.number().int().describe("ノートID"),
+    },
+    async ({ project_id, issue_iid, note_id }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/notes/${note_id}`,
+      );
+      return { message: "Issue note deleted successfully" };
+    },
+  );
+
+  register(
+    "delete_issue_link",
+    "Issue間のリンクを削除します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      issue_iid: z.number().int().describe("IssueのIID"),
+      issue_link_id: z.number().int().describe("IssueリンクID"),
+    },
+    async ({ project_id, issue_iid, issue_link_id }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/issues/${issue_iid}/links/${issue_link_id}`,
+      );
+      return { message: "Issue link deleted successfully" };
+    },
+  );
 }

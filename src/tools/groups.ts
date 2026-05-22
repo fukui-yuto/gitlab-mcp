@@ -146,4 +146,33 @@ export function registerGroupTools(register: ToolRegistrar, client: GitLabClient
       );
     },
   );
+
+  register(
+    "delete_group",
+    "グループを削除します。この操作は取り消せません。",
+    {
+      group_id: z.string().describe("グループID（数値またはURLエンコードされたパス）"),
+    },
+    async ({ group_id }) => {
+      await client.delete(
+        `/groups/${encodeURIComponent(group_id)}`,
+      );
+      return { message: "Group deleted successfully" };
+    },
+  );
+
+  register(
+    "remove_group_member",
+    "グループからメンバーを削除します。",
+    {
+      group_id: z.string().describe("グループID"),
+      user_id: z.number().int().describe("削除するユーザーID"),
+    },
+    async ({ group_id, user_id }) => {
+      await client.delete(
+        `/groups/${encodeURIComponent(group_id)}/members/${user_id}`,
+      );
+      return { message: "Group member removed successfully" };
+    },
+  );
 }

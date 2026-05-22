@@ -168,4 +168,19 @@ export function registerPipelineTools(register: ToolRegistrar, client: GitLabCli
       );
     },
   );
+
+  register(
+    "delete_pipeline",
+    "パイプラインとそれに関連するすべてのジョブを削除します。この操作は取り消せません。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      pipeline_id: z.number().int().describe("パイプラインID"),
+    },
+    async ({ project_id, pipeline_id }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/pipelines/${pipeline_id}`,
+      );
+      return { message: "Pipeline deleted successfully" };
+    },
+  );
 }

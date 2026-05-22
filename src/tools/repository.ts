@@ -273,4 +273,25 @@ export function registerRepositoryTools(register: ToolRegistrar, client: GitLabC
       );
     },
   );
+
+  register(
+    "delete_file",
+    "リポジトリ内のファイルを削除します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      file_path: z.string().describe("削除するファイルパス（例: src/old-file.ts）"),
+      branch: z.string().describe("コミット先ブランチ"),
+      commit_message: z.string().describe("コミットメッセージ"),
+      author_email: z.string().optional().describe("コミット作者のメールアドレス"),
+      author_name: z.string().optional().describe("コミット作者の名前"),
+    },
+    async ({ project_id, file_path, ...body }) => {
+      const encodedPath = encodeURIComponent(file_path);
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/repository/files/${encodedPath}`,
+        body as Record<string, unknown>,
+      );
+      return { message: "File deleted successfully" };
+    },
+  );
 }

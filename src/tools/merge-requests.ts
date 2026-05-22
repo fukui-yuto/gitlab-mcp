@@ -220,4 +220,35 @@ export function registerMergeRequestTools(register: ToolRegistrar, client: GitLa
       );
     },
   );
+
+  register(
+    "delete_merge_request",
+    "Merge Requestを削除します。この操作は取り消せません。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      merge_request_iid: z.number().int().describe("MRのIID"),
+    },
+    async ({ project_id, merge_request_iid }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/merge_requests/${merge_request_iid}`,
+      );
+      return { message: "Merge request deleted successfully" };
+    },
+  );
+
+  register(
+    "delete_merge_request_note",
+    "Merge Requestのコメント（ノート）を削除します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      merge_request_iid: z.number().int().describe("MRのIID"),
+      note_id: z.number().int().describe("ノートID"),
+    },
+    async ({ project_id, merge_request_iid, note_id }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/merge_requests/${merge_request_iid}/notes/${note_id}`,
+      );
+      return { message: "Merge request note deleted successfully" };
+    },
+  );
 }

@@ -41,4 +41,19 @@ export function registerDeploymentTools(register: ToolRegistrar, client: GitLabC
       );
     },
   );
+
+  register(
+    "delete_environment",
+    "プロジェクトの環境を削除します。停止済みの環境のみ削除できます。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      environment_id: z.number().int().describe("環境ID"),
+    },
+    async ({ project_id, environment_id }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/environments/${environment_id}`,
+      );
+      return { message: "Environment deleted successfully" };
+    },
+  );
 }

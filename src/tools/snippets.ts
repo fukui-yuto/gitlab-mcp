@@ -51,4 +51,19 @@ export function registerSnippetTools(register: ToolRegistrar, client: GitLabClie
       );
     },
   );
+
+  register(
+    "delete_snippet",
+    "スニペットを削除します。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      snippet_id: z.number().int().describe("スニペットID"),
+    },
+    async ({ project_id, snippet_id }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/snippets/${snippet_id}`,
+      );
+      return { message: "Snippet deleted successfully" };
+    },
+  );
 }

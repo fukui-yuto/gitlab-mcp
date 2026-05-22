@@ -100,7 +100,10 @@ export class GitLabClient {
     return this.request<T>("PUT", path, { body, params });
   }
 
-  async delete<T>(path: string): Promise<T> {
-    return this.request<T>("DELETE", path);
+  async delete<T>(
+    path: string,
+    body?: Record<string, unknown>,
+  ): Promise<T> {
+    return this.request<T>("DELETE", path, { body });
   }
 }

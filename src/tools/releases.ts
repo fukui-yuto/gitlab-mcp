@@ -39,4 +39,19 @@ export function registerReleaseTools(register: ToolRegistrar, client: GitLabClie
       );
     },
   );
+
+  register(
+    "delete_release",
+    "リリースを削除します。関連するタグは削除されません。",
+    {
+      project_id: z.string().describe("プロジェクトID"),
+      tag_name: z.string().describe("リリースに紐づくタグ名"),
+    },
+    async ({ project_id, tag_name }) => {
+      await client.delete(
+        `/projects/${encodeURIComponent(project_id)}/releases/${encodeURIComponent(tag_name)}`,
+      );
+      return { message: "Release deleted successfully" };
+    },
+  );
 }
